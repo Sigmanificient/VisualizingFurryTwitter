@@ -22,7 +22,7 @@ class TwitterClient():
         self.twitter_client = API(self.auth,wait_on_rate_limit=True)
 
     def _get_iter(self, api_call, user):
-        iter_vals = list()
+        iter_vals = []
         for page in Cursor(api_call, id=user, wait_on_rate_limit=True).pages():
             print(page[:5])
             iter_vals.extend(page)
@@ -35,10 +35,14 @@ class TwitterClient():
         return self.twitter_client.get_user(id = user)
 
     def get_user_tweets(self, user, num=None):
-        tweets = []
-        for tweet in Cursor(self.twitter_client.user_timeline, id=user, tweet_mode='extended', wait_on_rate_limit=True).items(num):
-            tweets.append(tweet)
-        return tweets
+        return list(
+            Cursor(
+                self.twitter_client.user_timeline,
+                id=user,
+                tweet_mode='extended',
+                wait_on_rate_limit=True,
+            ).items(num)
+        )
     
     def get_user_followers(self, user):
         followers = set()
